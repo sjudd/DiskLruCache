@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * A cache that uses a bounded amount of space on a filesystem. Each cache
  * entry has a string key and a fixed number of values. Each key must match
- * the regex <strong>[a-z0-9_-]{1,64}</strong>. Values are byte sequences,
+ * the regex <strong>[a-z0-9_-]{1,120}</strong>. Values are byte sequences,
  * accessible as streams or files. Each value must be between {@code 0} and
  * {@code Integer.MAX_VALUE} bytes in length.
  *
@@ -219,8 +219,6 @@ public final class DiskLruCache implements Closeable {
       try {
         cache.readJournal();
         cache.processJournal();
-        cache.journalWriter = new BufferedWriter(
-            new OutputStreamWriter(new FileOutputStream(cache.journalFile, true), Util.US_ASCII));
         return cache;
       } catch (IOException journalIsCorrupt) {
         System.out
@@ -267,6 +265,14 @@ public final class DiskLruCache implements Closeable {
         }
       }
       redundantOpCount = lineCount - lruEntries.size();
+
+      // If we ended on a truncated line, rebuild the journal before appending to it.
+      if (reader.hasUnterminatedLine()) {
+        rebuildJournal();
+      } else {
+        journalWriter = new BufferedWriter(new OutputStreamWriter(
+            new FileOutputStream(journalFile, true), Util.US_ASCII));
+      }
     } finally {
       Util.closeQuietly(reader);
     }

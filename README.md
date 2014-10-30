@@ -43,22 +43,6 @@ appropriately.
 
 *Note: This implementation specifically targets Android compatibility.*
 
-
-
-Obtaining
-=========
-
-If you are a Maven user you can also add this library as a dependency. Add the
-following to your `pom.xml`:
-
-```xml
-<dependency>
-  <groupId>com.bumptech.glide</groupId>
-  <artifactId>disklrucache</artifactId>
-  <version>(insert latest version)</version>
-</dependency>
-```
-
 License
 =======
 
