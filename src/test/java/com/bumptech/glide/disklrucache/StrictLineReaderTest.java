@@ -19,12 +19,15 @@ package com.bumptech.glide.disklrucache;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
+@RunWith(JUnit4.class)
 public class StrictLineReaderTest {
   @Test public void lineReaderConsistencyWithReadAsciiLine() {
     try {

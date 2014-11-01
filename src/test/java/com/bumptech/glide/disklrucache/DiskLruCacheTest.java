@@ -23,6 +23,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.BufferedReader;
@@ -42,6 +44,7 @@ import static com.bumptech.glide.disklrucache.DiskLruCache.MAGIC;
 import static com.bumptech.glide.disklrucache.DiskLruCache.VERSION_1;
 import static org.fest.assertions.api.Assertions.assertThat;
 
+@RunWith(JUnit4.class)
 public final class DiskLruCacheTest {
   private final int appVersion = 100;
   private File cacheDir;
