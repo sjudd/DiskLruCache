@@ -37,6 +37,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static com.bumptech.glide.disklrucache.DiskLruCache.JOURNAL_FILE;
 import static com.bumptech.glide.disklrucache.DiskLruCache.JOURNAL_FILE_BACKUP;
@@ -365,8 +366,9 @@ public final class DiskLruCacheTest {
     set("b", "bb", "bbbb"); // size 6
     set("c", "c", "c"); // size 12
     cache.setMaxSize(10);
-    assertThat(cache.executorService.getQueue().size()).isEqualTo(1);
-    cache.executorService.purge();
+    cache.executorService.shutdown();
+    cache.executorService.awaitTermination(500, TimeUnit.MILLISECONDS);
+    assertThat(cache.size()).isEqualTo(8 /* 12 - 4 */);
   }
 
   @Test public void evictOnInsert() throws Exception {
