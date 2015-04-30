@@ -16,16 +16,26 @@
 
 package com.bumptech.glide.disklrucache;
 
+import static com.bumptech.glide.disklrucache.DiskLruCache.JOURNAL_FILE;
+import static com.bumptech.glide.disklrucache.DiskLruCache.JOURNAL_FILE_BACKUP;
+import static com.bumptech.glide.disklrucache.DiskLruCache.MAGIC;
+import static com.bumptech.glide.disklrucache.DiskLruCache.VERSION_1;
+import static org.fest.assertions.api.Assertions.assertThat;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assume.assumeThat;
+
 import junit.framework.Assert;
 
 import org.apache.commons.io.FileUtils;
+import org.hamcrest.core.StringStartsWith;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
-import org.junit.rules.TemporaryFolder;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -39,12 +49,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static com.bumptech.glide.disklrucache.DiskLruCache.JOURNAL_FILE;
-import static com.bumptech.glide.disklrucache.DiskLruCache.JOURNAL_FILE_BACKUP;
-import static com.bumptech.glide.disklrucache.DiskLruCache.MAGIC;
-import static com.bumptech.glide.disklrucache.DiskLruCache.VERSION_1;
-import static org.fest.assertions.api.Assertions.assertThat;
-
 @RunWith(JUnit4.class)
 public final class DiskLruCacheTest {
   private final int appVersion = 100;
@@ -54,6 +58,11 @@ public final class DiskLruCacheTest {
   private DiskLruCache cache;
 
   @Rule public TemporaryFolder tempDir = new TemporaryFolder();
+
+  @BeforeClass
+  public static void setUpClass() {
+    assumeThat(System.getProperty("os.name"), not(StringStartsWith.startsWith("Windows")));
+  }
 
   @Before public void setUp() throws Exception {
     cacheDir = tempDir.newFolder("DiskLruCacheTest");
