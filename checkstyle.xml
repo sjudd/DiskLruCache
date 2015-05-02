@@ -4,9 +4,11 @@
     "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
 
 <module name="Checker">
-    <module name="NewlineAtEndOfFile"/>
     <module name="FileLength"/>
     <module name="FileTabCharacter"/>
+    <module name="NewlineAtEndOfFile">
+        <property name="lineSeparator" value="lf" />
+    </module>
 
     <!-- Trailing spaces -->
     <module name="RegexpSingleline">
