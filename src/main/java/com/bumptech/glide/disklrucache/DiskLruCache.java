@@ -35,6 +35,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -156,8 +157,8 @@ public final class DiskLruCache implements Closeable {
 
   /** This cache uses a single background thread to evict entries. */
   final ThreadPoolExecutor executorService =
-      new ThreadPoolExecutor(0, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
-  private final Callable<Void> cleanupCallable = new Callable<Void>() {
+      new ThreadPoolExecutor(0, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(),                                                                                                                                                                                                                      
+            new DiskLruCacheThreadFactory());  private final Callable<Void> cleanupCallable = new Callable<Void>() {
     public Void call() throws Exception {
       synchronized (DiskLruCache.this) {
         if (journalWriter == null) {
@@ -870,6 +871,13 @@ public final class DiskLruCache implements Closeable {
 
     public File getDirtyFile(int i) {
       return dirtyFiles[i];
+    }
+  }
+  
+  private static final class DiskLruCacheThreadFactory implements ThreadFactory {                                                                                                                                                                                                                                   
+    @Override                                                                                                                                                                                                                                                                                                       
+    public synchronized Thread newThread(Runnable runnable) {                                                                                                                                                                                                                                                       
+      return new Thread(runnable, "glide-disk-lru-cache-thread");                                                                                                                                                                                                                                                   
     }
   }
 }
