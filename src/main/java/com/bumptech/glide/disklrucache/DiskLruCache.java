@@ -876,19 +876,14 @@ public final class DiskLruCache implements Closeable {
   }
 
   /**
-   * A {@link java.util.concurrent.ThreadFactory} that builds a thread with priority {@link
-   * android.os.Process#THREAD_PRIORITY_BACKGROUND} and with a specific thread name.
+   * A {@link java.util.concurrent.ThreadFactory} that builds a thread with a specific thread name
+   * and with minimum priority.
    */
   private static final class DiskLruCacheThreadFactory implements ThreadFactory {
     @Override
     public synchronized Thread newThread(Runnable runnable) {
-      final Thread result = new Thread(runnable, "glide-disk-lru-cache-thread") {
-        @Override
-        public void run() {
-          android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
-          super.run();
-        }
-      };
+      Thread result = new Thread(runnable, "glide-disk-lru-cache-thread");
+      result.setPriority(Thread.MIN_PRIORITY);
       return result;
     }
   }
