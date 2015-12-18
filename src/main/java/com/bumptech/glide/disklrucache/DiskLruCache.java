@@ -157,8 +157,9 @@ public final class DiskLruCache implements Closeable {
 
   /** This cache uses a single background thread to evict entries. */
   final ThreadPoolExecutor executorService =
-      new ThreadPoolExecutor(0, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(),                                                                                                                                                                                                                      
-            new DiskLruCacheThreadFactory());  private final Callable<Void> cleanupCallable = new Callable<Void>() {
+      new ThreadPoolExecutor(0, 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(),
+            new DiskLruCacheThreadFactory());
+  private final Callable<Void> cleanupCallable = new Callable<Void>() {
     public Void call() throws Exception {
       synchronized (DiskLruCache.this) {
         if (journalWriter == null) {
@@ -873,11 +874,22 @@ public final class DiskLruCache implements Closeable {
       return dirtyFiles[i];
     }
   }
-  
-  private static final class DiskLruCacheThreadFactory implements ThreadFactory {                                                                                                                                                                                                                                   
-    @Override                                                                                                                                                                                                                                                                                                       
-    public synchronized Thread newThread(Runnable runnable) {                                                                                                                                                                                                                                                       
-      return new Thread(runnable, "glide-disk-lru-cache-thread");                                                                                                                                                                                                                                                   
+
+  /**
+   * A {@link java.util.concurrent.ThreadFactory} that builds a thread with priority {@link
+   * android.os.Process#THREAD_PRIORITY_BACKGROUND} and with a specific thread name.
+   */
+  private static final class DiskLruCacheThreadFactory implements ThreadFactory {
+    @Override
+    public synchronized Thread newThread(Runnable runnable) {
+      final Thread result = new Thread(runnable, "glide-disk-lru-cache-thread") {
+        @Override
+        public void run() {
+          android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+          super.run();
+        }
+      };
+      return result;
     }
   }
 }
