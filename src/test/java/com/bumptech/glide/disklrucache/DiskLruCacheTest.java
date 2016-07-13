@@ -24,11 +24,10 @@ import static org.fest.assertions.api.Assertions.assertThat;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assume.assumeThat;
 
-import junit.framework.Assert;
-
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.core.StringStartsWith;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
